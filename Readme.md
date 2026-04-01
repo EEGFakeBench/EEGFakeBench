@@ -4,18 +4,10 @@
   <img src="assets/mm_seed_arch.png" alt="MM-SEED Architecture" width="800"/>
 </p>
 
-<p align="center">
-  <a href="https://arxiv.org/abs/XXXX.XXXXX"><img src="https://img.shields.io/badge/arXiv-XXXX.XXXXX-b31b1b.svg" alt="arXiv"/></a>
-  <a href="https://openreview.net/forum?id=XXXXXXX"><img src="https://img.shields.io/badge/ACM%20MM%202026-Dataset%20Track-blue.svg" alt="ACM MM 2026"/></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-CC%20BY%204.0-green.svg" alt="License"/></a>
-  <a href="https://huggingface.co/datasets/XXXXXXX"><img src="https://img.shields.io/badge/🤗%20HuggingFace-Dataset-yellow.svg" alt="HuggingFace"/></a>
-</p>
-
 ---
 
 > **EEGFakeBench: A Multi-Generator Benchmark for Synthetic EEG Detection**
 >
-> *Accepted at ACM Multimedia 2026 — Dataset Track*
 
 ---
 
