@@ -162,7 +162,7 @@ Score-SDE signals are visually indistinguishable from authentic EEG in all three
 We provide **MM-SynED**, a bidirectional cross-modal attention framework for SynED.
 
 <p align="center">
-  <img src="forensic/MM-SynED.pdf" width="800"/>
+  <img src="forensic/MM-SynED.jpg" width="800"/>
 </p>
 
 **Architecture overview:**
