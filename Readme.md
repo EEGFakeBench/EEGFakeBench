@@ -1,111 +1,178 @@
-# EEGFakeBench
+# EEGFakeBench: A Benchmark Dataset for Synthetic EEG Detection
 
-<p align="center">
-  <img src="assets/mm_seed_arch.png" alt="MM-SEED Architecture" width="800"/>
-</p>
+
 
 ---
 
-> **EEGFakeBench: A Multi-Generator Benchmark for Synthetic EEG Detection**
->
+> **EEGFakeBench: A Benchmark Dataset for Synthetic EEG Detection**
+> Bhavinkumar Vinodbhai Kuwar, Nitin Choudhury, Rajesh Sharma, Arun Balaji Buduru, Orchid Chetia Phukan
+> *ACM Multimedia 2026 — Dataset Track*
+
+---
+
+## Dataset Access
+
+| Mirror | Link | Status |
+|---|---|---|
+| 🤗 HuggingFace (Primary) | [EEGFakeBench on HuggingFace](https://huggingface.co/datasets/Bhuvii19/EEGFakeBench) | ✅ Available |
+| Google Drive (Backup) | [EEGFakeBench on Drive](https://drive.google.com/drive/folders/1FqMTwrlL7UigABuQ0_r6Ji3Uta6bzZu9?usp=sharing) | ✅ Available |
+
 
 ---
 
 ## Overview
 
-**EEGFakeBench** is the first comprehensive multi-generator benchmark dataset for 
-**Synthetic EEG Detection (SynED)** — the task of detecting fully generative spoofing 
-in EEG signals. Modern generative models can now synthesize EEG signals that are 
-perceptually indistinguishable from genuine neural recordings, posing a serious threat 
-to EEG-based systems such as biometric authentication, extended reality (XR), and 
-neural gaming.
+**EEGFakeBench** is the first comprehensive multi-generator benchmark dataset for **Synthetic EEG Detection (SynED)** — the task of detecting fully generative spoofing in EEG signals. Modern generative models can now synthesize EEG signals that are perceptually indistinguishable from genuine neural recordings, posing a serious threat to EEG-based multimedia systems such as biometric authentication, extended reality (XR), and neural gaming.
 
-EEGFakeBench comprises **89,586 EEG recordings** — real EEG paired with synthetic 
-signals generated across **8 distinct generative model families**, enabling systematic 
-evaluation of detector generalization under realistic conditions where the synthesis 
-method is unknown at inference time.
+EEGFakeBench comprises **89,586 EEG recordings** — 9,954 authentic signals paired with 79,632 synthetic signals generated across **8 distinct generative model families** — enabling systematic evaluation of detector generalization under realistic conditions where the synthesis method is unknown at inference time.
 
 ---
 
 ## Dataset Statistics
 
-| Split | Real EEG | Synthetic EEG | Total |
-|---|---|---|---|
-| BCI IV-2a | 5,057 | 40,456 | 45,513 |
-| EEGMMIDB | 4,897 | 39,176 | 44,073 |
-| **Total** | **9,954** | **79,632** | **89,586** |
+| Split | Recordings | Source |
+|---|---|---|
+| Real (Authentic) | 9,954 | EEGMMIDB (109 subjects) |
+| Synthetic — GAN | 19,908 | WGAN (9,954) + TimeGAN (9,954) |
+| Synthetic — Diffusion | 9,954 | DS-DDPM |
+| Synthetic — Score-Based | 9,954 | Score-SDE |
+| Synthetic — NAC | 39,816 | EnCodec + DAC + SoundStream + SNAC (9,954 each) |
+| **Total** | **89,586** | |
 
-### Generative Model Families
-
-| Family | Models |
-|---|---|
-| **GAN-based** | WGAN, TimeGAN |
-| **Diffusion-based** | DS-DDPM |
-| **Score-based** | Score-SDE |
-| **Neural Audio Codecs (NACs)** | EnCodec, DAC, SoundStream, SNAC |
-
-Each generative model produces **9,954 synthetic samples** (22 channels × 1000 timepoints at 250 Hz).
+Each recording is a matrix of shape **(1000 timesteps × 22 channels)** at 250 Hz.
 
 ---
 
-## Signal Specifications
+## Directory Structure
+
+```
+EEGFakeBench/
+│
+├── real/                               ← All authentic preprocessed EEG trials (flat directory)
+│   ├── preprocessed_real_1.csv         ← Subject 1
+│   ├── preprocessed_real_2.csv
+│   ├── ...
+│   └── preprocessed_real_109.csv       ← Subject 109
+│
+└── EEGFakeBench_Generators/            ← All synthetic EEG, sorted by generative paradigm
+    │
+    ├── GAN/                            ← Adversarial generative models
+    │   ├── timegan_EEGMMIDB_1.csv
+    │   ├── timegan_EEGMMIDB_2.csv
+    │   ├── ...
+    │   ├── wgan_EEGMMIDB_1.csv
+    │   └── wgan_EEGMMIDB_109.csv
+    │
+    ├── Diffusion/                      ← Denoising diffusion models
+    │   ├── ddpm_EEGMMIDB_1.csv
+    │   └── ...
+    │
+    ├── score/                          ← Score-based continuous-time models
+    │   ├── scoresde_EEGMMIDB_1.csv
+    │   └── ...
+    │
+    └── NACs/                           ← Neural Audio Codec encode-decode pipelines
+        ├── encodec_EEGMMIDB_1.csv
+        ├── dac_EEGMMIDB_1.csv
+        ├── soundstream_EEGMMIDB_1.csv
+        ├── snac_EEGMMIDB_1.csv
+        └── ...
+```
+
+---
+
+## Naming Convention
+
+All files follow a strict, zero-padding-free convention:
+
+| Type | Format | Example |
+|---|---|---|
+| Authentic | `preprocessed_real_[subject_id].csv` | `preprocessed_real_54.csv` |
+| Synthetic | `[generator]_EEGMMIDB_[subject_id].csv` | `snac_EEGMMIDB_109.csv` |
+
+Valid generator prefixes: `timegan`, `wgan`, `ddpm`, `scoresde`, `encodec`, `dac`, `soundstream`, `snac`
+
+---
+
+## Internal Data Geometry
+
+Every CSV file — real and synthetic — shares **identical internal structure** for perfectly aligned 1:1 pairing.
+
+- **Rows:** 1000 per epoch (4 seconds at 250 Hz). Multiple epochs per subject are stacked consecutively.
+- **Columns:** 22 EEG channels in 10-10 system order.
+
+**Channel layout:**
+
+| Index | Ch | Index | Ch | Index | Ch | Index | Ch |
+|---|---|---|---|---|---|---|---|
+| 0 | Fz | 6 | C5 | 12 | C6 | 18 | P1 |
+| 1 | FC3 | 7 | C3 | 13 | CP3 | 19 | Pz |
+| 2 | FC1 | 8 | C1 | 14 | CP1 | 20 | P2 |
+| 3 | FCz | 9 | Cz | 15 | CPz | 21 | POz |
+| 4 | FC2 | 10 | C2 | 16 | CP2 | | |
+| 5 | FC4 | 11 | C4 | 17 | CP4 | | |
+
+**Signal specifications:**
 
 | Property | Value |
 |---|---|
-| Channels | 22 EEG channels |
 | Sampling Rate | 250 Hz |
 | Segment Length | 1000 timepoints (4 seconds) |
-| Format | NumPy arrays (.npy) |
+| Channels | 22 (10-10 system) |
+| Format | CSV |
 | Preprocessing | Bandpass filtered 4–40 Hz |
 
 ---
 
-## Benchmark Tasks
+## Generative Model Families
 
-EEGFakeBench supports three evaluation paradigms:
-
-### 1. Seen Evaluation
-Models are trained and tested on all 8 generators with a **70/10/20** train/validation/test split.
-
-### 2. Unseen Evaluation
-Models are trained on **seen generators** and tested exclusively on **unseen generators**.
-
-| Seen Generators | Unseen Generators |
-|---|---|
-| WGAN, DDPM, EnCodec, DAC | TimeGAN, SDE, SoundStream, SNAC |
-
-Each generative paradigm is represented in both splits, ensuring generalization is evaluated within and across paradigms.
-
-### 3. Leave-One-Generator-Out (LOGO)
-Each of the 8 generators is held out in turn as the sole test generator. The model is trained on real EEG paired with fake samples from the remaining 7 generators. Repeated 8 times.
+| Family | Folder | Models | Description |
+|---|---|---|---|
+| GAN-based | `GAN/` | WGAN, TimeGAN | WGAN captures global EEG distribution; TimeGAN preserves temporal dynamics via adversarial + supervised training |
+| Diffusion-based | `Diffusion/` | DS-DDPM | Subject-specific domain variance; simulates identity-targeted spoofing |
+| Score-based | `score/` | Score-SDE | Continuous-time SDE with VP-SDE, ScoreNet, Euler-Maruyama solver; most mathematically rigorous |
+| Neural Audio Codecs | `NACs/` | EnCodec, DAC, SoundStream, SNAC | Encode EEG into discrete latent space and reconstruct; treats EEG as audio-like time-series |
 
 ---
 
-## Baselines
+## Forensic Analysis
 
-We provide implementations of the following baselines:
+We compare **EnCodec** and **Score-SDE** as they bracket the forensic difficulty spectrum of EEGFakeBench.
 
-| Category | Model |
-|---|---|
-| EEG-Specific | EEGNet |
-| Transformer | EEG Conformer |
-| Audio Deepfake | AASIST |
-| Unimodal Pretrained | REVE-only, AST-only |
-| Multimodal | Late Fusion (REVE + AST) |
-| **Ours** | **MM-SEED** |
+### EnCodec — Codec Artifacts Above 40 Hz
 
-### MM-SEED Architecture
+| Time Domain | Power Spectral Density | Spectrogram |
+|---|---|---|
+| ![EnCodec Time](assets/forensic/time_domain_encodec.png) | ![EnCodec PSD](assets/forensic/psd_encodec.png) | ![EnCodec Spec](assets/forensic/spectrogram_encodec.png) |
 
-**MM-SEED** (Multimodal Synthetic EEG Detection) is a bidirectional cross-modal 
-attention framework that jointly models temporal and spectral EEG representations:
+EnCodec closely matches authentic EEG in the motor imagery band (0–40 Hz) but introduces high-frequency quantization noise above 40 Hz — a direct consequence of Residual Vector Quantization (RVQ) that is absent in genuine recordings.
 
-- **Temporal Branch:** Frozen REVE encoder (pretrained on 60,000 hours of EEG) 
-  extracts spatiotemporal embeddings from the raw EEG waveform
-- **Spectral Branch:** Frozen AST encoder extracts frequency-domain patch embeddings 
-  from the EEG spectrogram
-- **Bidirectional Cross-Modal Attention:** Allows each branch to query the other for 
-  complementary forensic evidence
-- **Fusion:** Global average pooling + concatenation + FCN classifier
+### Score-SDE — Near-Perfect Fidelity
+
+| Time Domain | Power Spectral Density | Spectrogram |
+|---|---|---|
+| ![SDE Time](assets/forensic/time_domain_sde.png) | ![SDE PSD](assets/forensic/psd_sde.png) | ![SDE Spec](assets/forensic/spectrogram_sde.png) |
+
+Score-SDE signals are visually indistinguishable from authentic EEG in all three domains. Only a marginal residual noise floor appears above 40 Hz from the Euler-Maruyama solver's incomplete resolution of high-frequency biological structure. This makes Score-SDE the most forensically challenging generator in EEGFakeBench.
+
+> The seventh forensic figure — a combined mega-figure as appears in the paper — is at `assets/forensic/mega_figure.png`.
+
+---
+
+## MM-SynED Baseline
+
+We provide **MM-SynED**, a bidirectional cross-modal attention framework for SynED.
+
+<p align="center">
+  <img src="assets/mm_syned_arch.png" width="800"/>
+</p>
+
+**Architecture overview:**
+
+- **Temporal Branch:** Raw EEG (22×1000) → Frozen REVE encoder → Conv1D (768→256, k=3) → MaxPool1D (k=2) → output: (125×256)
+- **Spectral Branch:** Channel-averaged STFT → 128×128 spectrogram → Frozen AST encoder (positional embeddings interpolated 512→64) → Conv1D (768→256, k=3) → MaxPool1D (k=2) → output: (32×256)
+- **Bidirectional Cross-Modal Attention:** REVE queries AST; AST queries REVE
+- **Fusion:** GAP on each attended output → Concatenation (512-dim) → FCN (512→256, GELU, Dropout 0.4) → Sigmoid
 
 ---
 
@@ -119,186 +186,61 @@ attention framework that jointly models temporal and spectral EEG representation
 | REVE-only | 74.1 | 29.3 | 57.2 | 44.1 |
 | AST-only | 71.8 | 31.7 | 55.6 | 45.3 |
 | Late Fusion | 76.9 | 26.8 | 59.4 | 42.3 |
-| **MM-SEED (Ours)** | **79.0** | **24.2** | **62.7** | **39.2** |
+| **MM-SynED (Ours)** | **79.0** | **24.2** | **62.7** | **39.2** |
 
-All models exhibit unseen AUC within 51.3%–62.7%, confirming that **SynED remains 
-a fundamentally open and challenging problem**. Extended LOGO results are available 
-in the paper.
+All models exhibit unseen AUC within 51.3%–62.7%, confirming that **SynED remains a fundamentally open problem.** Full LOGO results across all 8 generators are in the paper.
+
+---
+
+## Evaluation Protocol
+
+### Seen
+Train and test on all 8 generators. Split: **70% train / 10% val / 20% test.**
+
+### Unseen
+Train on seen generators, test on unseen generators.
+
+| Seen | Unseen |
+|---|---|
+| WGAN, DDPM, EnCodec, DAC | TimeGAN, SDE, SoundStream, SNAC |
+
+One generator from each paradigm appears in both groups.
+
+### Leave-One-Generator-Out (LOGO)
+Each of the 8 generators is held out as the sole test set in turn. Model trains on real EEG + fakes from remaining 7 generators. Repeated 8 times.
+
+---
+
+## Real EEG Data Source
+
+| Dataset | Subjects | Recordings Used | Original Channels | Original Hz |
+|---|---|---|---|---|
+| [EEGMMIDB (PhysioNet)](https://physionet.org/content/eegmmidb/1.0.0/) | 109 | 9,954 | 64 | 160 |
+| [BCI Competition IV-2a](https://www.bbci.de/competition/iv/) | 9 | 5,184 | 22 | 250 |
+
+**Harmonization & Preprocessing Applied:** EOG/artifact removal, motor imagery trial isolation, and fixed trial lengths of 1000 timepoints. To achieve perfect 1:1 structural harmonization across both datasets, EEGMMIDB was spatially reduced (64→22 channels to match the 10-10 system) and temporally upsampled (160→250 Hz to match the BCI-IV-2a native baseline).
 
 ---
 
 ## Installation
 
 ```bash
-git clone https://github.com/XXXXXXX/EEGFakeBench.git
+git clone https://github.com/EEGFakeBench/EEGFakeBench.git
 cd EEGFakeBench
-pip install -r requirements.txt
 ```
 
-### Requirements
-
-```
-torch>=2.0.0
-numpy>=1.24.0
-scipy>=1.10.0
-scikit-learn>=1.2.0
-mne>=1.4.0
-transformers>=4.30.0
-pandas>=2.0.0
-matplotlib>=3.7.0
-```
-
----
-
-## Dataset Download
-
-The full EEGFakeBench dataset is available on HuggingFace:
-
-```python
-from datasets import load_dataset
-dataset = load_dataset("XXXXXXX/EEGFakeBench")
-```
-
-Or download directly from [Zenodo](https://zenodo.org/record/XXXXXXX).
-
-### Dataset Structure
-
-```
-EEGFakeBench/
-├── real/
-│   ├── BCICIV_2a/          # 5,057 samples
-│   └── EEGMMIDB/           # 4,897 samples
-├── synthetic/
-│   ├── wgan/               # 9,954 samples
-│   ├── timegan/            # 9,954 samples
-│   ├── ddpm/               # 9,954 samples
-│   ├── score_sde/          # 9,954 samples
-│   ├── encodec/            # 9,954 samples
-│   ├── dac/                # 9,954 samples
-│   ├── soundstream/        # 9,954 samples
-│   └── snac/               # 9,954 samples
-└── splits/
-    ├── seen_train.csv
-    ├── seen_val.csv
-    ├── seen_test.csv
-    ├── unseen_test.csv
-    └── logo/
-        ├── logo_wgan.csv
-        ├── logo_timegan.csv
-        └── ...
-```
-
-Each sample is stored as a NumPy array of shape `(22, 1000)` — 22 channels × 1000 timepoints.
-
----
-
-## Usage
-
-### Loading a Sample
-
-```python
-import numpy as np
-
-# Load a real EEG sample
-real_sample = np.load('real/BCICIV_2a/sample_0001.npy')  # shape: (22, 1000)
-
-# Load a synthetic EEG sample
-fake_sample = np.load('synthetic/encodec/sample_0001.npy')  # shape: (22, 1000)
-```
-
-### Running MM-SEED
-
-```python
-from models.mm_seed import MMSEED
-
-model = MMSEED(
-    reve_checkpoint='pretrained/reve',
-    ast_checkpoint='pretrained/ast',
-    d_model=256,
-    n_heads=8,
-    dropout=0.4
-)
-
-# Input: raw EEG (B, 22, 1000) and spectrogram (B, 1, 128, 128)
-logits = model(raw_eeg, spectrogram)
-```
-
-### Running Evaluation
-
-```python
-# Seen evaluation
-python evaluate.py --paradigm seen --model mm_seed
-
-# Unseen evaluation  
-python evaluate.py --paradigm unseen --model mm_seed
-
-# LOGO evaluation
-python evaluate.py --paradigm logo --model mm_seed --generator encodec
-```
-
----
-
-## Forensic Analysis
-
-Our forensic analysis reveals that synthetic EEG signals closely match authentic 
-recordings across temporal, spectral, and time-frequency domains:
-
-- **Score-SDE** achieves near-perfect signal fidelity — visually indistinguishable 
-  from real EEG in all three domains
-- **EnCodec** preserves the motor imagery band (0–40 Hz) but introduces high-frequency 
-  quantization artifacts above 40 Hz via residual vector quantization (RVQ)
-
-Extended forensic analysis across all 8 generators is available on the 
-[project website](https://XXXXXXX.github.io/EEGFakeBench).
-
----
-
-## Real EEG Data Sources
-
-EEGFakeBench uses the following publicly available real EEG datasets as ground truth:
-
-| Dataset | Subjects | Recordings | Channels | Sampling Rate |
-|---|---|---|---|---|
-| [BCI Competition IV-2a](https://www.bbci.de/competition/iv/) | 9 | 5,057 | 22 | 250 Hz |
-| [EEGMMIDB (PhysioNet)](https://physionet.org/content/eegmmidb/1.0.0/) | 109 | 4,897 | 22 | 250 Hz |
-
----
-
-## Citation
-
-If you use EEGFakeBench in your research, please cite:
-
-```bibtex
-@inproceedings{XXXX2026eegfakebench,
-  title     = {EEGFakeBench: A Multi-Generator Benchmark for Synthetic EEG Detection},
-  author    = {XXXX},
-  booktitle = {Proceedings of the 34th ACM International Conference on Multimedia},
-  year      = {2026},
-  publisher = {ACM},
-  address   = {New York, NY, USA}
-}
-```
 
 ---
 
 ## License
 
 EEGFakeBench is released under the [Creative Commons Attribution 4.0 International License](LICENSE).
-
-The real EEG data sources are subject to their original licenses:
-- BCI Competition IV-2a: Available for research use
-- EEGMMIDB: Available under PhysioNet Credentialed Health Data License
+The EEGMMIDB source data is subject to the [PhysioNet Credentialed Health Data License](https://physionet.org/content/eegmmidb/1.0.0/).
+The BCI-IV-2a source data is subject to the [BCI Competition IV Terms of Use](https://www.bbci.de/competition/iv/)
 
 ---
 
-## Acknowledgements
+### Contact
 
-We thank the creators of the BCI Competition IV-2a and EEGMMIDB datasets, and the 
-developers of REVE and AST for making their pretrained models publicly available.
-
----
-
-## Contact
-
-For questions about the dataset or benchmark, please open a GitHub issue or contact 
-the authors at [XXXX@XXXX.edu].
+For questions, open a GitHub issue or contact the corresponding author:
+**Bhavinkumar Vinodbhai Kuwar** — bhavinkumar24212@iiitd.ac.in
