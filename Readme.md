@@ -155,8 +155,6 @@ EnCodec closely matches authentic EEG in the motor imagery band (0–40 Hz) but 
 
 Score-SDE signals are visually indistinguishable from authentic EEG in all three domains. Only a marginal residual noise floor appears above 40 Hz from the Euler-Maruyama solver's incomplete resolution of high-frequency biological structure. This makes Score-SDE the most forensically challenging generator in EEGFakeBench.
 
-> The seventh forensic figure — a combined mega-figure as appears in the paper — is at `assets/forensic/mega_figure.png`.
-
 ---
 
 ## MM-SynED Baseline
@@ -164,7 +162,7 @@ Score-SDE signals are visually indistinguishable from authentic EEG in all three
 We provide **MM-SynED**, a bidirectional cross-modal attention framework for SynED.
 
 <p align="center">
-  <img src="forensic/mm_syned_arch.png" width="800"/>
+  <img src="forensic/MM-SynED.pdf" width="800"/>
 </p>
 
 **Architecture overview:**
