@@ -143,7 +143,7 @@ We compare **EnCodec** and **Score-SDE** as they bracket the forensic difficulty
 
 | Time Domain | Power Spectral Density | Spectrogram |
 |---|---|---|
-| ![EnCodec Time](assets/forensic/time_domain_encodec.png) | ![EnCodec PSD](assets/forensic/psd_encodec.png) | ![EnCodec Spec](assets/forensic/spectrogram_encodec.png) |
+| ![EnCodec Time](forensic/time_domain_encodec.jpg) | ![EnCodec PSD](forensic/psd_encodec.jpg) | ![EnCodec Spec](forensic/spectrogram_encodec.jpg) |
 
 EnCodec closely matches authentic EEG in the motor imagery band (0–40 Hz) but introduces high-frequency quantization noise above 40 Hz — a direct consequence of Residual Vector Quantization (RVQ) that is absent in genuine recordings.
 
@@ -151,7 +151,7 @@ EnCodec closely matches authentic EEG in the motor imagery band (0–40 Hz) but 
 
 | Time Domain | Power Spectral Density | Spectrogram |
 |---|---|---|
-| ![SDE Time](assets/forensic/time_domain_sde.png) | ![SDE PSD](assets/forensic/psd_sde.png) | ![SDE Spec](assets/forensic/spectrogram_sde.png) |
+| ![SDE Time](forensic/time_domain_sde.jpg) | ![SDE PSD](forensic/psd_sde.jpg) | ![SDE Spec](forensic/spectrogram_sde.jpg) |
 
 Score-SDE signals are visually indistinguishable from authentic EEG in all three domains. Only a marginal residual noise floor appears above 40 Hz from the Euler-Maruyama solver's incomplete resolution of high-frequency biological structure. This makes Score-SDE the most forensically challenging generator in EEGFakeBench.
 
@@ -164,7 +164,7 @@ Score-SDE signals are visually indistinguishable from authentic EEG in all three
 We provide **MM-SynED**, a bidirectional cross-modal attention framework for SynED.
 
 <p align="center">
-  <img src="assets/mm_syned_arch.png" width="800"/>
+  <img src="forensic/mm_syned_arch.png" width="800"/>
 </p>
 
 **Architecture overview:**
