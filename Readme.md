@@ -143,7 +143,7 @@ We compare **EnCodec** and **Score-SDE** as they bracket the forensic difficulty
 
 | Time Domain | Power Spectral Density | Spectrogram |
 |---|---|---|
-| ![EnCodec Time](forensic/time_domain_encodec.jpg) | ![EnCodec PSD](forensic/psd_encodec.jpg) | ![EnCodec Spec](forensic/spectrogram_encodec.jpg) |
+| ![EnCodec Time](forensic/time_domain_encodec.jpg) | ![EnCodec PSD](forensic/psd_encodec.jpg) | ![EnCodec Spec](forensic/spectogram_encodec.jpg) |
 
 EnCodec closely matches authentic EEG in the motor imagery band (0–40 Hz) but introduces high-frequency quantization noise above 40 Hz — a direct consequence of Residual Vector Quantization (RVQ) that is absent in genuine recordings.
 
