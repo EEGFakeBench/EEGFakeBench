@@ -216,7 +216,7 @@ Each of the 8 generators is held out as the sole test set in turn. Model trains 
 | [EEGMMIDB (PhysioNet)](https://physionet.org/content/eegmmidb/1.0.0/) | 109 | 9,954 | 64 | 160 |
 | [BCI Competition IV-2a](https://www.bbci.de/competition/iv/) | 9 | 5,184 | 22 | 250 |
 
-**Harmonization & Preprocessing Applied:** EOG/artifact removal, motor imagery trial isolation, and fixed trial lengths of 1000 timepoints. To achieve perfect 1:1 structural harmonization across both datasets, EEGMMIDB was spatially reduced (64→22 channels to match the 10-10 system) and temporally upsampled (160→250 Hz to match the BCI-IV-2a native baseline).
+**Harmonization & Preprocessing Applied:** EOG/artifact removal, motor imagery trial isolation, and fixed trial lengths of 1000 timepoints. To achieve perfect 1:1 structural harmonization across both datasets, EEGMMIDB was spatially reduced (64→22 channels to match the 10-10 system) and temporally upsampled (160→250 Hz to match the BCI-IV-2a native baseline). We have used only 4897 of 9954 signals from EEGMMIDB to ensure complete fairness in the experiments by including only similar tasks from both datasets.
 
 ---
 
